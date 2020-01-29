@@ -82,18 +82,19 @@ There isn't a limit to the number of requests an user can send.
 
 ### Endpoints
 
-#### GET http://127.0.0.1:5000/categories
+#### GET /categories
 
 Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 
 Example RequestDefault:
 
-'''
+```
 curl --location --request GET 'http://127.0.0.1:5000/categories' \
 --data-raw ''
 ```
 
 Example Response
+
 ```
 {
   "categories": {
@@ -107,19 +108,20 @@ Example Response
   "success": true
 }
 ```
-#### GET http://127.0.0.1:5000/questions?page=1
+
+#### GET /questions?page=1
 
 Fetches a list a list of 10 questions, number of total questions, current category, categories
 
 
 Example RequestDefault
-'''
+```
 curl --location --request GET 'http://127.0.0.1:5000/questions?page=1' \
 --data-raw ''
-'''
+```
 
 Example Response:
-'''
+```
 {
   "categories": {
     "1": "Science",
@@ -168,69 +170,70 @@ Example Response:
   ],
   "total_questions": 4
 }
-'''
+```
 
-#### DELETE http://127.0.0.1:5000/questions/1
+#### DELETE /questions/1
 
 Allows questions to be deleted by question id.
 
 Example Request
-'''
+```
 curl --location --request DELETE 'http://127.0.0.1:5000/questions/1' \
 --data-raw ''
-'''
+```
 
 Example Response:
-'''
+```
 }
     'success': True,
     'deleted': 1
 }
-'''
-#### POST http://127.0.0.1:5000/questions
+```
+
+#### POST /questions
 
 Allows you to POST a new question, which will require the question and answer text, category, and difficulty score.
 
 Body raw (text):
-'''
+```
 {"question":"Where is Red Fort?","answer":"New Delhi","difficulty":"2","category":"3"}
-'''
+```
 
 Example Request:
-'''
+```
 curl --location --request POST 'http://127.0.0.1:5000/questions' \
 --data-raw '{"question":"Where is Red Fort?","answer":"New Delhi","difficulty":"2","category":"3"}'
-'''
+```
 
 Example Response:
-'''
+```
 }
     'success': True,
     'question_id': 10
 }
-'''
+```
 
-#### POST http://127.0.0.1:5000/questions/search
+#### POST /questions/search
 
 Fetches questions based on a search term.
 
 Body raw (text)
-'''
+```
 {"searchTerm":"d"}
-'''
+```
 
 Example Request:
-'''
+```
 curl --location --request POST 'http://127.0.0.1:5000/questions/search' \
 --header 'Content-Type: application/json' \
 --data-raw '{
 	"searchTerm": "What"
 
 }'
-'''
+```
 
 Example Response:
-'''
+```
 {
   "current_category": [
     1,
@@ -285,20 +288,20 @@ Example Response:
   "success": true,
   "total_questions": 6
 }
-'''
+```
 
-#### GET http://127.0.0.1:5000/categories/1/questions
+#### GET /categories/<Category ID>/questions
 
 Fetched you only questions from a particular category
 
 Example Request:
-'''
+```
 curl --location --request GET 'http://127.0.0.1:5000/categories/1/questions' \
 --data-raw ''
-'''
+```
 
 Example Response
-'''
+```
 {
   "current_category": "Science",
   "questions": [
@@ -319,9 +322,9 @@ Example Response
   ],
   "total_questions": 2
 }
-'''
+```
 
-#### POST http://127.0.0.1:5000/questions/quizzes
+#### POST /questions/quizzes
 
 Takes category and previous question parameters and returns a random questions within the given category, if provided, and that is not one of the previous questions
 
