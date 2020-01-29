@@ -119,16 +119,36 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    '''
-    @TODO:
-    Create an endpoint to POST a new question,
-    which will require the question and answer text,
-    category, and difficulty score.
+    @app.route('/questions', methods=['POST'])
+    def add_questions():
+        '''Endpoint to POST a new question using method "POST" '''
+        body = request.get_json()
 
-    TEST: When you submit a question on the "Add" tab,
-    the form will clear and the question will appear at the end of the last page
-    of the questions list in the "List" tab.
-    '''
+        question_s = body.get('question', None)
+        answer_s = body.get('answer', None)
+        difficulty_s = body.get('difficulty', None)
+        category_s = body.get('category', None)
+
+        if any(len(elem)==0 for elem in [question_s, answer_s]):
+            abort(400)
+        if difficulty_s is None or category_s is None:
+            abort(400)
+
+        try:
+            question = Question(
+            question = question_s,
+            answer = answer_s,
+            difficulty = difficulty_s,
+            category = category_s)
+
+            question.insert()
+
+            return jsonify({
+                'success': True
+            })
+
+        except:
+            abort(422)
 
     '''
     @TODO:
@@ -140,6 +160,25 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     '''
+    @app.route('/questions/search', methods = ['POST'])
+    def search_questions():
+        body = request.get_json()
+
+        search = body.get('searchTerm', None)
+
+        try:
+            selection = Question.query.order_by(Question.id).filter(Question.question.ilike("%{}%".format(search))).all()
+            current_questions = paginate_questions(request, selection)
+
+            current_categories = list(set([question['category'] for question in current_questions]))
+
+            return jsonify({
+                'questions': current_questions,
+                'total_questions': len(selection),
+                'current_category': current_categories
+                })
+        except:
+            abort(404)
 
     '''
     @TODO:
