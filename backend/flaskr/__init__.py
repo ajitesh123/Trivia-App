@@ -51,8 +51,8 @@ def create_app(test_config=None):
             abort(404)
 
         return jsonify({
-            'categories': category_dict,
-            'success': True
+            'success': True,
+            'categories': category_dict
         }), 200
 
     @app.route('/questions', methods=['GET'])
