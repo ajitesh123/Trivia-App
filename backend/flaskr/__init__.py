@@ -51,7 +51,8 @@ def create_app(test_config=None):
             abort(404)
 
         return jsonify({
-            'categories': category_dict
+            'categories': category_dict,
+            'success': True
         }), 200
 
     @app.route('/questions', methods=['GET'])
@@ -126,7 +127,8 @@ def create_app(test_config=None):
             question.insert()
 
             return jsonify({
-                'success': True
+                'success': True,
+                'question_id': question.id
             })
 
         except:
@@ -139,18 +141,23 @@ def create_app(test_config=None):
         body = request.get_json()
 
         search = body.get('searchTerm', None)
+        if search is None:
+            abort(400)
 
         try:
             selection = Question.query.order_by(Question.id).\
                         filter(Question.question.ilike("%{}%".\
                         format(search))).all()
 
-            current_questions = paginate_questions(request, selection)
+            if len(selection) == 0:
+                abort(404)
 
+            current_questions = paginate_questions(request, selection)
             current_categories = list(set([question['category'] for question in current_questions]))
 
             return jsonify({
                 'questions': current_questions,
+                'success': True,
                 'total_questions': len(selection),
                 'current_category': current_categories
                 })
