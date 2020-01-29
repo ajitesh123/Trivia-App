@@ -20,13 +20,17 @@ def paginate_questions(request, selection):
     return current_questions
 
 def create_app(test_config=None):
-  # create and configure the app
+#------------------------------------------------------------
+#  App Configuration
+#-------------------------------------------------------------
     app = Flask(__name__)
     setup_db(app)
     #Allows request from any website
     CORS(app, resources={'/': {"origins": "*"}})
 
-
+#------------------------------------------------------------
+#  Controllers
+#-------------------------------------------------------------
     @app.after_request
     def after_request(response):
         '''Defines access control headers and methods'''
@@ -43,7 +47,7 @@ def create_app(test_config=None):
             category_dict[category.format()['id']] = category.format()['type']
 
         #In case no category exist, display error message
-        if len(category_dict)==0:
+        if len(category_dict) == 0:
             abort(404)
 
         return jsonify({
@@ -105,17 +109,19 @@ def create_app(test_config=None):
         difficulty_s = body.get('difficulty', None)
         category_s = body.get('category', None)
 
-        if any(len(elem)==0 for elem in [question_s, answer_s]):
+        #In case paramters are not appropriately supplied, give error message
+        if any(len(elem) == 0 for elem in [question_s, answer_s]):
             abort(400)
         if difficulty_s is None or category_s is None:
             abort(400)
 
         try:
             question = Question(
-            question = question_s,
-            answer = answer_s,
-            difficulty = difficulty_s,
-            category = category_s)
+                question = question_s,
+                answer = answer_s,
+                difficulty = difficulty_s,
+                category = category_s
+                )
 
             question.insert()
 
@@ -127,8 +133,9 @@ def create_app(test_config=None):
             abort(422)
 
 
-    @app.route('/questions/search', methods = ['POST'])
+    @app.route('/questions/search', methods=['POST'])
     def search_questions():
+        '''Serves questions based on match with the search term'''
         body = request.get_json()
 
         search = body.get('searchTerm', None)
@@ -151,10 +158,11 @@ def create_app(test_config=None):
             abort(404)
 
 
-    @app.route('/categories/<int:category_id>/questions', methods = ['GET'])
+    @app.route('/categories/<int:category_id>/questions', methods=['GET'])
     def get_category_questions(category_id):
+        '''Handles GET request to serve question by category'''
         try:
-            if category_id==None:
+            if category_id == None:
                 abort(400)
 
             selection = Question.query.filter(Question.category==category_id).all()
@@ -163,7 +171,7 @@ def create_app(test_config=None):
             current_category = Category.query.filter(Category.id==category_id).\
                                 all()[0].format()["type"]
 
-            if len(selection)==0:
+            if len(selection) == 0:
                 abort(404)
 
             return jsonify({
@@ -175,8 +183,13 @@ def create_app(test_config=None):
             abort(404)
 
 
-    @app.route('/quizzes', methods = ['POST'])
+    @app.route('/quizzes', methods=['POST'])
     def start_quiz():
+        '''
+        Retuns the next question for the quiz.
+        Input -- Previous questions ids and category
+        Output -- Next question
+        '''
         body = request.get_json()
         try:
             previous_questions = body.get('previous_questions', None)
@@ -187,7 +200,7 @@ def create_app(test_config=None):
 
             category_id = quiz_category["id"]
 
-            if category_id==0:
+            if category_id == 0:
                 selection = Question.query.all()
             else:
                 selection = Question.query.filter(Question.category==category_id).all()
@@ -195,7 +208,7 @@ def create_app(test_config=None):
             question_repo = list(filter(lambda q: (q.id not in previous_questions), selection))
             formatted_repo = [question.format() for question in question_repo]
 
-            if len(formatted_repo)==0:
+            if len(formatted_repo) == 0:
                 next_question = None
             else:
                 next_question = random.choice(formatted_repo)
