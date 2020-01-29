@@ -109,7 +109,7 @@ Example Response
 }
 ```
 
-#### GET /questions?page=1
+#### GET /questions?page={page_number}
 
 Fetches a list a list of 10 questions, number of total questions, current category, categories
 
@@ -172,7 +172,7 @@ Example Response:
 }
 ```
 
-#### DELETE /questions/1
+#### DELETE /questions/{question ID}
 
 Allows questions to be deleted by question id.
 
@@ -196,7 +196,12 @@ Allows you to POST a new question, which will require the question and answer te
 
 Body raw (text):
 ```
-{"question":"Where is Red Fort?","answer":"New Delhi","difficulty":"2","category":"3"}
+{
+    "question":"{new question}",
+    "answer":"{answer}",
+    "difficulty":{difficulty},
+    "category":"{category ID}"
+}
 ```
 
 Example Request:
@@ -219,7 +224,7 @@ Fetches questions based on a search term.
 
 Body raw (text)
 ```
-{"searchTerm":"d"}
+{"searchTerm":"{Search Term}"}
 ```
 
 Example Request:
@@ -290,7 +295,7 @@ Example Response:
 }
 ```
 
-#### GET /categories/<Category ID>/questions
+#### GET /categories/{Category ID}/questions
 
 Fetched you only questions from a particular category
 
@@ -330,7 +335,13 @@ Takes category and previous question parameters and returns a random questions w
 
 Body raw (text)
 ```
-{"previous_questions":[],"quiz_category":{"type":"Science","id":"1"}}
+{   
+      "previous_questions":{List of Previous Question ID},
+      "quiz_category":{
+                        "type":"{Category Name}",
+                        "id":"{Category ID}"}
+                      }
+}
 ```
 
 Example Request:
@@ -347,7 +358,7 @@ Example Response:
       "difficulty": 3,
       "id": 21,
       "question": "Who discovered penicillin?"
-    }
+}
 ```
 
 ## Testing
