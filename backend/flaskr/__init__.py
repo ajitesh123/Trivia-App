@@ -167,7 +167,10 @@ def create_app(test_config=None):
         search = body.get('searchTerm', None)
 
         try:
-            selection = Question.query.order_by(Question.id).filter(Question.question.ilike("%{}%".format(search))).all()
+            selection = Question.query.order_by(Question.id).\
+                        filter(Question.question.ilike("%{}%".\
+                        format(search))).all()
+
             current_questions = paginate_questions(request, selection)
 
             current_categories = list(set([question['category'] for question in current_questions]))
@@ -188,7 +191,28 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     '''
+    @app.route('/categories/<int:category_id>/questions', methods = ['GET'])
+    def get_category_questions(category_id):
 
+        selection = Question.query.filter(Question.category==category_id).all()
+        current_questions = paginate_questions(request, selection)
+
+        current_category = Category.query.filter(Category.id==category_id).\
+                            all()[0].format()["type"]
+
+        if len(selection)==0:
+            abort(404)
+
+        return jsonify({
+            'questions': current_questions,
+            'total_questions': len(selection),
+            'current_category': current_category,
+        })
+
+
+        # questions
+        # total_questions
+        # current_category
 
     '''
     @TODO:
